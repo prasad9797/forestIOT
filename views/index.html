@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="60" />
+    <script>
+      let xhr = new XMLHttpRequest();
+
+      // open() method to pass request
+      // type, url and async true/false
+      xhr.open("GET", "https://protectforest.herokuapp.com/sensordata", true);
+
+      // onload function to get data
+      xhr.onload = function () {
+        if (this.status === 200) {
+          result = JSON.parse(this.responseText);
+
+          var Table = document.getElementById("testBody");
+
+          Table.innerHTML = "";
+
+          var len = result.data;
+          console.log(len);
+          for (let i = 0; i < len.length; i++) {
+            loadTableData(result.data[i]);
+          }
+
+          //console.log(JSON.parse(this.responseText));
+        }
+      };
+
+      // Send function to send data
+      xhr.send();
+
+      function loadTableData(items) {
+        const table = document.getElementById("testBody");
+        //items.forEach((item) => {
+        let row = table.insertRow();
+        let fire = row.insertCell(0);
+        if (items.fire == "1") {
+          fire.innerHTML = "YES";
+        } else {
+          fire.innerHTML = "NO";
+        }
+        let sound = row.insertCell(1);
+        if (items.sound == "1") {
+          sound.innerHTML = "YES";
+        } else {
+          sound.innerHTML = "NO";
+        }
+        let ph = row.insertCell(2);
+        if (items.ph == "1") {
+          ph.innerHTML = "NOT NORMAL";
+        } else {
+          ph.innerHTML = "NORMAL";
+        }
+        let gyro = row.insertCell(3);
+        if (items.gyro == "1") {
+          gyro.innerHTML = "YES";
+        } else {
+          gyro.innerHTML = "NO";
+        }
+        let gx = row.insertCell(4);
+        gx.innerHTML = items.gx;
+        let gy = row.insertCell(5);
+        gy.innerHTML = items.gy;
+        let gz = row.insertCell(6);
+        gz.innerHTML = items.gz;
+        let lat = row.insertCell(7);
+        lat.innerHTML = items.lat;
+        let long = row.insertCell(8);
+        long.innerHTML = items.long;
+        let danger = row.insertCell(9);
+        if (items.danger == "1") {
+          danger.innerHTML = "YES";
+          danger.style.backgroundColor = "#FF0000";
+        } else {
+          danger.innerHTML = "NO";
+        }
+        let date = row.insertCell(10);
+        date.innerHTML = items.created_at;
+        // });
+      }
+    </script>
+  </head>
+  <style>
+    table,
+    th,
+    td {
+      border: 1px solid black;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    .button {
+      background-color: #4caf50; /* Green */
+      border: none;
+      color: white;
+      padding: 16px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      transition-duration: 0.4s;
+      cursor: pointer;
+    }
+
+    .button2 {
+      background-color: #059862;
+      color: black;
+      border: 2px solid #4caf50;
+    }
+
+    .button2:hover {
+      box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+        0 17px 50px 0 rgba(0, 0, 0, 0.19);
+      background-color: #4caf50;
+      color: white;
+    }
+  </style>
+  <body>
+    <mat-card>
+      <h2>Log for activities in forest</h2>
+      <div class="buttons" style="margin-bottom: 20px">
+        <button
+          id="post-btn"
+          class="button button2"
+          style="height: 50px; margin-right: 15px"
+        >
+          Problem Resolved
+        </button>
+      </div>
+    </mat-card>
+    <table id="myTable" border="1">
+      <thead>
+        <tr>
+          <th>Fire Detected</th>
+          <th>Sound Detected</th>
+          <th>pH Value</th>
+          <th>Movement Detected</th>
+          <th>X-Direction</th>
+          <th>Y-Direction</th>
+          <th>Z-Direction</th>
+          <th>Latitute</th>
+          <th>Longitude</th>
+          <th>Danger</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="testBody" align="center"></tbody>
+    </table>
+
+    <script>
+      const button = document.getElementById("post-btn");
+      var result = "";
+
+      button.addEventListener("click", async (_) => {
+        // let xhr1 = new XMLHttpRequest();
+        // // open() method to pass request
+        // // type, url and async true/false
+        // console.log("1");
+        // xhr1.open("PUT", "http://localhost:5100/updatedata", true);
+        // // onload function to get data
+        // xhr1.onload = function () {
+        //   if (this.status === 200) {
+        //     console.log("bye");
+        //     //console.log(JSON.parse(this.responseText));
+        //   }
+        // };
+        // Send function to send data
+        //xhr1.send();
+        // function loadTableData(items) {
+        //   const table = document.getElementById("testBody");
+        //   //items.forEach((item) => {
+        //   let row = table.insertRow();
+        //   let fire = row.insertCell(0);
+        //   fire.innerHTML = items.fire;
+        //   fire.style.backgroundColor = "#FF0000";
+        //   let gyro = row.insertCell(1);
+        //   gyro.innerHTML = items.gyro;
+        //   let date = row.insertCell(2);
+        //   date.innerHTML = items.created_at;
+        //   // });
+        // }
+
+        var url = "https://protectforest.herokuapp.com/updatedata";
+
+        var data = {};
+        data.value = "Sent";
+        var json = JSON.stringify(data);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", url, true);
+        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+        xhr.onload = function () {
+          var users = JSON.parse(xhr.responseText);
+          if (xhr.readyState == 4 && xhr.status == "200") {
+            console.log("hello");
+          } else {
+            console.error(users);
+          }
+        };
+        xhr.send(json);
+      });
+    </script>
+  </body>
+</html>
